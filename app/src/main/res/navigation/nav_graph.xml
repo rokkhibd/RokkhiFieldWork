@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainPageFragment">
+
+    <fragment
+        android:id="@+id/mainPageFragment"
+        android:name="com.rokkhi.rokkhimarketinganalyst.Ui.MainPageFragment"
+        android:label="fragment_main_page"
+        tools:layout="@layout/fragment_main_page" >
+        <action
+            android:id="@+id/action_mainPageFragment_to_addBuildingsFragment"
+            app:destination="@id/addBuildingsFragment" />
+        <action
+            android:id="@+id/action_mainPageFragment_to_createProfileFragment"
+            app:destination="@id/createProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addBuildingsFragment"
+        android:name="com.rokkhi.rokkhimarketinganalyst.Ui.AddBuildingsFragment"
+        android:label="fragment_add_buildings"
+        tools:layout="@layout/fragment_add_buildings" />
+    <fragment
+        android:id="@+id/createProfileFragment"
+        android:name="com.rokkhi.rokkhimarketinganalyst.Ui.CreateProfileFragment"
+        android:label="fragment_create_profile"
+        tools:layout="@layout/fragment_create_profile" />
+</navigation>
