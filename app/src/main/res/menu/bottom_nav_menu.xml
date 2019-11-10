@@ -8,7 +8,7 @@
         />
 
     <item
-        android:icon="@drawable/maleone"
+        android:icon="@drawable/account_one"
         android:title="profile"
         android:id="@+id/profile"/>
 

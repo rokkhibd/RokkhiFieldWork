@@ -17,7 +17,7 @@
 
         <LinearLayout
 
-            android:background="@drawable/round_edittext"
+            android:background="@drawable/round_edittext2"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

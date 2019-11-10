@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                                     if (!documentSnapshot.exists()){
-                                        //gotoProfilActivity();
+                                       // gotoProfilActivity();
                                     }else {
                                         //stayatthisActivity();
                                     }
@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
 
         bottomNavigationView=findViewById(R.id.nav_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -115,8 +114,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomNavigationView.setSelectedItemId(R.id.my_home);
-
-
 
     }
 
@@ -162,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             Log.d(TAG, "handleSignInResponse: checkhere ");
             Log.d(TAG, "handleSignInResponse: jjj " + FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+
             //loaduserdata();
 
         } else {

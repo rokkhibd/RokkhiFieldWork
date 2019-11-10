@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +25,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +46,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rokkhi.rokkhimarketinganalyst.Model.AllStringValues;
 import com.rokkhi.rokkhimarketinganalyst.Model.FBuildings;
 import com.rokkhi.rokkhimarketinganalyst.R;
@@ -67,13 +72,14 @@ public class AddBuildingActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
 
     ProgressDialog progressDialog;
+    ProgressBar progressBar;
 
     RelativeLayout relativeLayout;
 
     FirebaseFirestore db;
     FirebaseAuth mAuth;
     FirebaseStorage firebaseStorage;
-    StorageReference storageRef;
+    StorageReference addbldngRef;
     String currentUser;
 
     ListView roadNumberList, blockList, houseNoList, areaListView;
@@ -91,7 +97,7 @@ public class AddBuildingActivity extends AppCompatActivity {
     Button saveBtn,tapCode,addInfoButton,checkHouseBtn;
 
     String areaListCode,roadListCode,blockListCode,houseListCode,housefrmntListCode,totalHouseCode
-            ,status,flatformat,districtValue;
+            ,status,flatformat,districtValue,downloadImageUri,totalCode;
 
     String wholeAddress;
 
@@ -109,9 +115,10 @@ public class AddBuildingActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser=FirebaseAuth.getInstance().getCurrentUser().getUid();
-        storageRef = FirebaseStorage.getInstance().getReference().child("fworkers_photo");
+        addbldngRef = FirebaseStorage.getInstance().getReference().child("fbldngs_photo");
 
         progressDialog=new ProgressDialog(this);
+        progressBar=findViewById(R.id.progressbar);
 
         relativeLayout=findViewById(R.id.addbldng_relative_layout);
 
@@ -167,7 +174,8 @@ public class AddBuildingActivity extends AppCompatActivity {
         addInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.setMessage("wait,till saving data");
+                progressBar.setVisibility(View.VISIBLE);
+                saveImageToStorage();
                 saveBuildingDataInDB();
             }
         });
@@ -279,6 +287,7 @@ public class AddBuildingActivity extends AppCompatActivity {
                 String housefrmt=b_housefrmt.getText().toString();
                 districtValue=b_district.getText().toString();
 
+
                 String theWholeAddress=area+" "+road+block+" "+houseNmbr+housefrmt+" "+districtValue;
 
                 wholeAddress=theWholeAddress;
@@ -293,9 +302,16 @@ public class AddBuildingActivity extends AppCompatActivity {
 
                 Toast.makeText(AddBuildingActivity.this, districtValue, Toast.LENGTH_SHORT).show();
 
-                String totalCode=areaListCode+"*"+roadListCode+"*"+blockListCode+"*"+houseListCode+"*"+housefrmntListCode+"*"+districtValue;
+                Log.d("TAG", "onClick:areaListCode "+areaListCode);
+                Log.d("TAG", "onClick: roadListCode"+roadListCode);
+                Log.d("TAG", "onClick: blockListCode"+blockListCode);
+                Log.d("TAG", "onClick:houseListCode "+houseListCode);
+                Log.d("TAG", "onClick:districtValue "+districtValue);
+                Log.d("TAG", "onClick:housefrmntListCode "+housefrmntListCode);
 
-                totalHouseCode=areaListCode+roadListCode+blockListCode+houseListCode+housefrmntListCode+districtValue;
+                totalCode=areaListCode+"*"+roadListCode+"*"+blockListCode+"*"+houseListCode+"*"+housefrmntListCode+"*"+districtValue;
+
+                totalHouseCode=areaListCode+""+roadListCode+""+blockListCode+""+houseListCode+""+housefrmntListCode+""+districtValue;
 
                 //b_code.setText(totalHouseCode);
                 checkTheHouseAvailability(totalCode);
@@ -659,32 +675,97 @@ public class AddBuildingActivity extends AppCompatActivity {
         });
     }
 
+    public void saveImageToStorage(){
+        final StorageReference filePath=addbldngRef.child(pickedImageUri.getLastPathSegment()+".jpg");
+        final UploadTask uploadTask=filePath.putFile(pickedImageUri);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(AddBuildingActivity.this, "Error:"+e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(AddBuildingActivity.this, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+                Task<Uri> urlTask=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+                        if (!task.isSuccessful()){
+                            throw task.getException();
+                        }
+                        downloadImageUri=filePath.getDownloadUrl().toString();
+
+                        return filePath.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()){
+                            downloadImageUri=task.getResult().toString();
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
    public void saveBuildingDataInDB(){
-        String housename=b_name.getText().toString();
-        String caretakrname=b_caretakername.getText().toString();
-        String caretakernmbr=b_caretakernmbr.getText().toString();
 
-        String care_number=add88withNumb(caretakernmbr);
-
-        String flatperfloor=b_floorperflat.getText().toString();
-        String followupdate=b_follwing.getText().toString();
-        String visit=b_visit.getText().toString();
-        String guardname=b_guardname.getText().toString();
-        String guardnmbr=b_guardnmbr.getText().toString();
-
-        String guard_number=add88withNumb(guardnmbr);
+       String area=b_area.getText().toString();
+       String road=b_roadnumber.getText().toString();
+       String block=b_block.getText().toString();
+       String houseNmbr=b_housenmbr.getText().toString();
+       String housefrmt=b_housefrmt.getText().toString();
+       districtValue=b_district.getText().toString();
 
 
-        String ownername=b_ownername.getText().toString();
-        String ownernmbr=b_ownernmbr.getText().toString();
+       String theWholeAddress=area+" "+road+block+" "+houseNmbr+housefrmt+" "+districtValue;
 
-        String owner_number=add88withNumb(ownernmbr);
+       wholeAddress=theWholeAddress;
 
-        String guards=b_totalguard.getText().toString();
-        String totalfloor=b_totalfloor.getText().toString();
+       area=areaListCode;
+       road=roadListCode;
+       block=blockListCode;
+       houseNmbr=houseListCode;
+       housefrmt=housefrmntListCode;
+
+       districtValue= String.valueOf(1);
+       totalHouseCode=areaListCode+""+roadListCode+""+blockListCode+""+houseListCode+""+housefrmntListCode+""+districtValue;
 
 
-        Normalfunc normalfunc=new Normalfunc();
+       String housename=b_name.getText().toString();
+       String caretakrname=b_caretakername.getText().toString();
+       String caretakernmbr=b_caretakernmbr.getText().toString();
+
+       String care_number=add88withNumb(caretakernmbr);
+
+       String flatperfloor=b_floorperflat.getText().toString();
+       String followupdate=b_follwing.getText().toString();
+       String visit=b_visit.getText().toString();
+       String guardname=b_guardname.getText().toString();
+       String guardnmbr=b_guardnmbr.getText().toString();
+       String guard_number=add88withNumb(guardnmbr);
+
+
+       String ownername=b_ownername.getText().toString();
+       String ownernmbr=b_ownernmbr.getText().toString();
+
+       String owner_number=add88withNumb(ownernmbr);
+
+       String guards=b_totalguard.getText().toString();
+       String totalfloor=b_totalfloor.getText().toString();
+
+
+       Normalfunc normalfunc=new Normalfunc();
+       //Toast.makeText(this, ""+totalHouseCode.length(), Toast.LENGTH_SHORT).show();
+
         List<String> b_code_array=normalfunc.splitchar(totalHouseCode);
 
         Map<String,Object> areaMap=new HashMap<>();
@@ -700,6 +781,7 @@ public class AddBuildingActivity extends AppCompatActivity {
        areaMap.put("b_ownername",ownername);
        areaMap.put("b_ownernmbr",owner_number);
        areaMap.put("b_status",status);
+       areaMap.put("b_code",totalCode);
        areaMap.put("b_code_array",b_code_array);
        areaMap.put("b_totalfloor",totalfloor);
        areaMap.put("b_visiteddate",visit);
@@ -775,7 +857,6 @@ public class AddBuildingActivity extends AppCompatActivity {
                 //relativeLayout.setVisibility(View.GO);
             }
         });
-
-
     }
+
 }

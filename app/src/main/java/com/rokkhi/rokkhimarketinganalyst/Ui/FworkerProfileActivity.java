@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -25,6 +28,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.github.ybq.android.spinkit.style.Wave;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,6 +43,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.rokkhi.rokkhimarketinganalyst.MainActivity;
 import com.rokkhi.rokkhimarketinganalyst.Model.AllStringValues;
 import com.rokkhi.rokkhimarketinganalyst.R;
 import com.rokkhi.rokkhimarketinganalyst.Utils.Normalfunc;
@@ -48,6 +55,7 @@ import com.vansuita.pickimage.listeners.IPickResult;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +91,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
     StorageReference storageRef;
     FirebaseUser currentUser;
 
-    String userId;
+    String userId,downloadImageUri;
 
     DatePickerDialog datePickerDialog;
     CircleImageView circleImageView;
@@ -91,7 +99,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
     Bitmap bitmap;
     Uri pickedImageUri;
 
-    ProgressBar progressBar;
+    ProgressBar progressBar,spinKitProgressBar;
 
 
     @Override
@@ -122,6 +130,10 @@ public class FworkerProfileActivity extends AppCompatActivity {
         f_joindate=findViewById(R.id.fworker_joining_edit);
         progressBar=findViewById(R.id.progressBar);
 
+        spinKitProgressBar=findViewById(R.id.spin_kit);
+        Wave wave=new Wave();
+        spinKitProgressBar.setIndeterminateDrawable(wave);
+
         allStringValues=new AllStringValues();
 
         //TODO: ImageViews ID
@@ -135,13 +147,14 @@ public class FworkerProfileActivity extends AppCompatActivity {
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,allStringValues.gender);
         f_gender.setAdapter(adapter);
 
-        //TODO:Click listener of All Image views
 
+        //TODO:Click listener of All Image views
         saveData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
+                spinKitProgressBar.setVisibility(View.VISIBLE);
                 saveAllDataToFirestore();
+
 
             }
         });
@@ -173,6 +186,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
                             pickedImageUri = r.getUri();
                             bitmap = r.getBitmap();
                             circleImageView.setImageBitmap(r.getBitmap());
+                            saveImageToStorage();
 
                         } else {
                             Toast.makeText(FworkerProfileActivity.this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
@@ -472,15 +486,6 @@ public class FworkerProfileActivity extends AppCompatActivity {
 
     }
 
-    public void showCalendar(){
-
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-
-        // datePickerDialog=new Da
-    }
 
 
     public void saveAllDataToFirestore(){
@@ -491,17 +496,19 @@ public class FworkerProfileActivity extends AppCompatActivity {
         String fw_housenmbr=f_houseno.getText().toString();
         String fw_houseletter=f_roadletter.getText().toString();
         String fphone=f_phone.getText().toString();
+
+        String phone=add88withNumb(fphone);
+
         String fw_nid=f_nid.getText().toString();
         String fw_dob=f_dob.getText().toString();
         String fw_uni=f_uni.getText().toString();
         String fw_joindate=f_joindate.getText().toString();
         String fw_mail=f_mail.getText().toString();
         String fw_gender=f_gender.getText().toString();
-
         String fw_address=fw_area+" "+fw_road+fw_block+" "+fw_housenmbr+fw_houseletter;
 
         Normalfunc normalfunc=new Normalfunc();
-        List<String> fw_phone=normalfunc.splitstring(fphone);
+        List<String> fw_phone=normalfunc.splitstring(phone);
 
         Map<String,Object> fw_map=new HashMap<>();
         fw_map.put("fw_name",fw_name);
@@ -512,6 +519,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
         fw_map.put("fw_uni",fw_uni);
         fw_map.put("fw_joindate",fw_joindate);
         fw_map.put("fw_mail",fw_mail);
+        fw_map.put("fw_imageUrl",downloadImageUri);
         fw_map.put("fw_gender",fw_gender);
         fw_map.put("fw_uid",userId);
 
@@ -521,7 +529,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
 
                 if (task.isSuccessful()){
-                    progressBar.setVisibility(View.GONE);
+                    spinKitProgressBar.setVisibility(View.GONE);
                     Toast.makeText(FworkerProfileActivity.this,"Data saved!!",Toast.LENGTH_SHORT).show();
                 }
             }
@@ -535,4 +543,106 @@ public class FworkerProfileActivity extends AppCompatActivity {
 
     }
 
+    /*@Override
+    protected void onStart() {
+        super.onStart();
+
+        SharedPreferences sharedPreferences=getSharedPreferences("workersdetils", Context.MODE_PRIVATE);
+        if (sharedPreferences.contains("fw_name") && sharedPreferences.contains("fw_nid") && sharedPreferences.contains("fw_phone")
+                && sharedPreferences.contains("fw_joindate")){
+            //stayAtMainActvity();
+        }else {
+
+            String fw_name=sharedPreferences.getString("fw_name","no data");
+            String fw_phone=sharedPreferences.getString("fw_phone","no data");
+            String fw_area=sharedPreferences.getString("fw_area","no data");
+            String fw_road=sharedPreferences.getString("fw_road","no data");
+            String fw_block=sharedPreferences.getString("fw_block","no data");
+            String fw_housenumber=sharedPreferences.getString("fw_housenumber","no data");
+            String fw_nid=sharedPreferences.getString("fw_nid","no data");
+            String fw_dob=sharedPreferences.getString("fw_dob","no data");
+            String fw_uni=sharedPreferences.getString("fw_uni","no data");
+            String fw_joindate=sharedPreferences.getString("fw_joindate","no data");
+            String fw_gender=sharedPreferences.getString("fw_gender","no data");
+            String fw_mail=sharedPreferences.getString("fw_mail","no data");
+
+            f_name.setText(fw_name);
+            f_phone.setText(fw_phone);
+            f_area.setText(fw_area);
+
+
+        }
+    }
+*/
+    public void saveImageToStorage(){
+        final StorageReference filePath=storageRef.child(pickedImageUri.getLastPathSegment()+".jpg");
+        final UploadTask uploadTask=filePath.putFile(pickedImageUri);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(FworkerProfileActivity.this, "Error:"+e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(FworkerProfileActivity.this, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+                Task<Uri> urlTask=uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+                        if (!task.isSuccessful()){
+                            throw task.getException();
+                        }
+                        downloadImageUri=filePath.getDownloadUrl().toString();
+
+                        return filePath.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()){
+                            downloadImageUri=task.getResult().toString();
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    private void stayAtMainActvity() {
+        Intent intent= new Intent(FworkerProfileActivity.this,MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public String add88withNumb(String s){
+        String number="+88"+s;
+        return number;
+    }
+
+
+    // SharedPreferences sharedPreferences=getSharedPreferences("workersdetils", Context.MODE_PRIVATE);
+    //SharedPreferences.Editor editor=sharedPreferences.edit();
+
+    //writing the sharedpref
+        /*editor.putString("fw_name",fw_name);
+        editor.putString("fw_area",fw_area);
+        editor.putString("fw_road",fw_road);
+        editor.putString("fw_block",fw_block);
+        editor.putString("fw_housenumber",fw_housenmbr);
+        editor.putString("fw_phone",fphone);
+        editor.putString("fw_nid",fw_nid);
+        editor.putString("fw_dob",fw_dob);
+        editor.putString("fw_uni",fw_uni);
+        editor.putString("fw_joindate",fw_joindate);
+        editor.putString("fw_mail",fw_mail);
+        editor.putString("fw_gender",fw_gender);
+        editor.commit();
+*/
 }

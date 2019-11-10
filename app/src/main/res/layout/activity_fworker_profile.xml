@@ -313,6 +313,18 @@
             android:layout_width="match_parent"
             android:layout_height="38dp"/>
 
+
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/spin_kit"
+            style="@style/SpinKitView.Large.Wave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:SpinKit_Color="@color/lightorange" />
+
         <ProgressBar
             android:visibility="gone"
             android:layout_centerInParent="true"
