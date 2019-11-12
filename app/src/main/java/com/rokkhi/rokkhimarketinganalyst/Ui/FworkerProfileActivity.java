@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -147,6 +148,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,allStringValues.gender);
         f_gender.setAdapter(adapter);
 
+        checkProfileActvty();
 
         //TODO:Click listener of All Image views
         saveData.setOnClickListener(new View.OnClickListener() {
@@ -524,6 +526,26 @@ public class FworkerProfileActivity extends AppCompatActivity {
         fw_map.put("fw_uid",userId);
 
 
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+
+
+        editor.putString("fw_name",fw_name);
+        //editor.putString("fw_area",fw_area);
+        //editor.putString("fw_road",fw_road);
+        //editor.putString("fw_block",fw_block);
+       // editor.putString("fw_housenumber",fw_housenmbr);
+        editor.putString("fw_phone",fphone);
+        //editor.putString("fw_nid",fw_nid);
+        //editor.putString("fw_dob",fw_dob);
+        //editor.putString("fw_uni",fw_uni);
+        editor.putString("fw_joindate",fw_joindate);
+        //editor.putString("fw_mail",fw_mail);
+        //editor.putString("fw_gender",fw_gender);
+        editor.commit();
+
+
+
         db.collection("f_workers").document(userId).set(fw_map).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -531,6 +553,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
                 if (task.isSuccessful()){
                     spinKitProgressBar.setVisibility(View.GONE);
                     Toast.makeText(FworkerProfileActivity.this,"Data saved!!",Toast.LENGTH_SHORT).show();
+                    stayAtMainActvity();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -540,40 +563,8 @@ public class FworkerProfileActivity extends AppCompatActivity {
                 Toast.makeText(FworkerProfileActivity.this,"Error!!"+e,Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-
-        SharedPreferences sharedPreferences=getSharedPreferences("workersdetils", Context.MODE_PRIVATE);
-        if (sharedPreferences.contains("fw_name") && sharedPreferences.contains("fw_nid") && sharedPreferences.contains("fw_phone")
-                && sharedPreferences.contains("fw_joindate")){
-            //stayAtMainActvity();
-        }else {
-
-            String fw_name=sharedPreferences.getString("fw_name","no data");
-            String fw_phone=sharedPreferences.getString("fw_phone","no data");
-            String fw_area=sharedPreferences.getString("fw_area","no data");
-            String fw_road=sharedPreferences.getString("fw_road","no data");
-            String fw_block=sharedPreferences.getString("fw_block","no data");
-            String fw_housenumber=sharedPreferences.getString("fw_housenumber","no data");
-            String fw_nid=sharedPreferences.getString("fw_nid","no data");
-            String fw_dob=sharedPreferences.getString("fw_dob","no data");
-            String fw_uni=sharedPreferences.getString("fw_uni","no data");
-            String fw_joindate=sharedPreferences.getString("fw_joindate","no data");
-            String fw_gender=sharedPreferences.getString("fw_gender","no data");
-            String fw_mail=sharedPreferences.getString("fw_mail","no data");
-
-            f_name.setText(fw_name);
-            f_phone.setText(fw_phone);
-            f_area.setText(fw_area);
-
-
-        }
-    }
-*/
     public void saveImageToStorage(){
         final StorageReference filePath=storageRef.child(pickedImageUri.getLastPathSegment()+".jpg");
         final UploadTask uploadTask=filePath.putFile(pickedImageUri);
@@ -627,22 +618,32 @@ public class FworkerProfileActivity extends AppCompatActivity {
     }
 
 
-    // SharedPreferences sharedPreferences=getSharedPreferences("workersdetils", Context.MODE_PRIVATE);
-    //SharedPreferences.Editor editor=sharedPreferences.edit();
+    public void checkProfileActvty(){
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (sharedPreferences.contains("fw_name") && sharedPreferences.contains("fw_nid") && sharedPreferences.contains("fw_phone")
+                && sharedPreferences.contains("fw_joindate")){
+            stayAtMainActvity();
+        }else {
 
-    //writing the sharedpref
-        /*editor.putString("fw_name",fw_name);
-        editor.putString("fw_area",fw_area);
-        editor.putString("fw_road",fw_road);
-        editor.putString("fw_block",fw_block);
-        editor.putString("fw_housenumber",fw_housenmbr);
-        editor.putString("fw_phone",fphone);
-        editor.putString("fw_nid",fw_nid);
-        editor.putString("fw_dob",fw_dob);
-        editor.putString("fw_uni",fw_uni);
-        editor.putString("fw_joindate",fw_joindate);
-        editor.putString("fw_mail",fw_mail);
-        editor.putString("fw_gender",fw_gender);
-        editor.commit();
-*/
+            String fw_name=sharedPreferences.getString("fw_name","no data");
+            String fw_phone=sharedPreferences.getString("fw_phone","no data");
+            String fw_area=sharedPreferences.getString("fw_area","no data");
+            String fw_road=sharedPreferences.getString("fw_road","no data");
+            String fw_block=sharedPreferences.getString("fw_block","no data");
+            String fw_housenumber=sharedPreferences.getString("fw_housenumber","no data");
+            String fw_nid=sharedPreferences.getString("fw_nid","no data");
+            String fw_dob=sharedPreferences.getString("fw_dob","no data");
+            String fw_uni=sharedPreferences.getString("fw_uni","no data");
+            String fw_joindate=sharedPreferences.getString("fw_joindate","no data");
+            String fw_gender=sharedPreferences.getString("fw_gender","no data");
+            String fw_mail=sharedPreferences.getString("fw_mail","no data");
+
+            f_name.setText(fw_name);
+            f_phone.setText(fw_phone);
+            f_area.setText(fw_area);
+
+
+        }
+    }
+
 }

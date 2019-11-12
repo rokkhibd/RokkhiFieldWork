@@ -25,6 +25,7 @@ public class FBuildings {
     private String b_totalfloor;
     private String b_visiteddate;
     private String b_status;
+    private String b_imageUrl;
     private List<String> b_array_code;
     private String b_lat;
     private String b_long;
@@ -38,7 +39,7 @@ public class FBuildings {
                       String b_flatfrmt, String b_flatperfloor, String b_followupdate, String b_guardname,
                       String b_guardnmbr, String b_guards, String b_housename, String b_ownername,
                       String b_ownernmbr, String b_totalfloor, String b_visiteddate, String b_status
-                      ,String b_lat, String b_long,List<String> b_array_code) {
+                      ,String b_lat,String b_imageUrl, String b_long,List<String> b_array_code) {
         this.b_address = b_address;
         this.b_caretakernam = b_caretakernam;
         this.b_caretakernmbr = b_caretakernmbr;
@@ -58,6 +59,16 @@ public class FBuildings {
         this.b_lat=b_lat;
         this.b_long=b_long;
         this.b_array_code=b_array_code;
+        this.b_imageUrl=b_imageUrl;
+    }
+
+
+    public String getB_imageUrl() {
+        return b_imageUrl;
+    }
+
+    public void setB_imageUrl(String b_imageUrl) {
+        this.b_imageUrl = b_imageUrl;
     }
 
     public String getId() {

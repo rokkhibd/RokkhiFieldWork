@@ -28,7 +28,7 @@ public class AllStringValues {
 
    public String[] gender=new String[]{"Male","Female"};
 
-   public String[] status=new String[]{"Pending","Cancel","Followup"};
+   public String[] status=new String[]{"Pending","Cancel","Done","Following"};
 
    public String[] flatformat=new String[]{"1A","A1","101"};
 

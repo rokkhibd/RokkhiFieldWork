@@ -1,10 +1,15 @@
 package com.rokkhi.rokkhimarketinganalyst.Model;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,17 +25,41 @@ public class BuildingsListAdapter extends RecyclerView.Adapter<BuildingsListAdap
 
 
     public BuildingsListAdapter(List<FBuildings> fBuildingsList) {
-       // this.context = context;
+        //this.context = context;
         this.fBuildingsList = fBuildingsList;
     }
 
     @NonNull
     @Override
-    public BuildingViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new BuildingViewholder(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.home_list_layout,parent,false)
+    public BuildingViewholder onCreateViewHolder(@NonNull final ViewGroup parent, int viewType) {
 
-        );
+        View v;
+
+        v=LayoutInflater.from(parent.getContext()).inflate(R.layout.home_list_layout,parent,false);
+        final BuildingViewholder bv=new BuildingViewholder(v);
+
+        //TODO:Dialog initialize
+
+        final Dialog dialog=new Dialog(parent.getContext());
+        dialog.setContentView(R.layout.show_buildinginfo_layout);
+
+        //TODO:Show buildings info in a Dialogue
+        bv.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                TextView textView=(TextView) dialog.findViewById(R.id.house_name);
+                textView.setText("House Name: "+fBuildingsList.get(bv.getAdapterPosition()).getB_housename());
+
+                TextView address=(TextView) dialog.findViewById(R.id.house_address);
+                address.setText(fBuildingsList.get(bv.getAdapterPosition()).getB_address());
+
+                Toast.makeText(parent.getContext(), String.valueOf(bv.getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                dialog.show();
+            }
+        });
+        return bv;
     }
 
     @Override
@@ -54,16 +83,19 @@ public class BuildingsListAdapter extends RecyclerView.Adapter<BuildingsListAdap
     public class BuildingViewholder extends RecyclerView.ViewHolder {
 
         TextView build_name,build_address,build_status,build_lastVisit;
-
+        RelativeLayout relativeLayout;
         public BuildingViewholder(@NonNull View itemView) {
             super(itemView);
-
+            relativeLayout=(RelativeLayout) itemView.findViewById(R.id.item_list_id);
             build_name=itemView.findViewById(R.id.myhome_frag_bldngName);
             build_address=itemView.findViewById(R.id.myhome_frag_bldngAddress);
             build_status=itemView.findViewById(R.id.myhome_frag_bldngstatus);
             build_lastVisit=itemView.findViewById(R.id.myhome_frag_bldngvisitdate);
 
 
+            //itemView.setOnClickListener(this);
         }
+
+
     }
 }

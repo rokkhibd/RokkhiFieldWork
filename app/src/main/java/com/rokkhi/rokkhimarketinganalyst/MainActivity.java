@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseFirestore=FirebaseFirestore.getInstance();
         mAuth=FirebaseAuth.getInstance();
 
-        mAuthStateListener=new FirebaseAuth.AuthStateListener() {
+        /*mAuthStateListener=new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser=firebaseAuth.getCurrentUser();
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                                     if (!documentSnapshot.exists()){
-                                       // gotoProfilActivity();
+                                       //gotoProfilActivity();
                                     }else {
                                         //stayatthisActivity();
                                     }
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
+*/
         bottomNavigationView=findViewById(R.id.nav_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity {
                 .setWhitelistedCountries(whitelistedCountries)
                 .build();
 
-        signInPhone(mrootview);
+        //signInPhone(mrootview);
 
     }
 
-    public void signInPhone(View view) {
+    /*public void signInPhone(View view) {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -198,6 +198,6 @@ public class MainActivity extends AppCompatActivity {
     public void gotoProfilActivity(){
         Intent intent=new Intent(MainActivity.this, FworkerProfileActivity.class);
         startActivity(intent);
-    }
+    }*/
 
 }

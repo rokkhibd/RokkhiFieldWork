@@ -175,7 +175,6 @@ public class AddBuildingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 progressBar.setVisibility(View.VISIBLE);
-                saveImageToStorage();
                 saveBuildingDataInDB();
             }
         });
@@ -225,7 +224,7 @@ public class AddBuildingActivity extends AppCompatActivity {
                             pickedImageUri = r.getUri();
                             bitmap = r.getBitmap();
                             circleImageView.setImageBitmap(r.getBitmap());
-
+                            saveImageToStorage();
                         } else {
                             Toast.makeText(AddBuildingActivity.this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
 
@@ -782,6 +781,7 @@ public class AddBuildingActivity extends AppCompatActivity {
        areaMap.put("b_ownernmbr",owner_number);
        areaMap.put("b_status",status);
        areaMap.put("b_code",totalCode);
+       areaMap.put("b_imageUrl",downloadImageUri);
        areaMap.put("b_code_array",b_code_array);
        areaMap.put("b_totalfloor",totalfloor);
        areaMap.put("b_visiteddate",visit);
