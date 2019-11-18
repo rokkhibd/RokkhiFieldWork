@@ -119,6 +119,7 @@
 
 
           <ImageView
+              android:visibility="gone"
               android:id="@+id/roadmenudown"
               android:layout_alignTop="@id/bldng_edit_road"
               android:layout_alignRight="@id/bldng_edit_road"
@@ -129,6 +130,7 @@
 
 
           <ImageView
+              android:visibility="gone"
               android:id="@+id/blockmenudown"
               android:layout_alignTop="@id/bldng_edit_block"
               android:layout_alignRight="@id/bldng_edit_block"
@@ -138,6 +140,7 @@
               android:layout_height="wrap_content"/>
 
           <ImageView
+              android:visibility="gone"
               android:id="@+id/areamenudown"
               android:layout_alignRight="@id/bldng_edit_area"
               android:layout_alignBottom="@id/bldng_edit_area"
@@ -175,6 +178,7 @@
               android:layout_height="38dp"/>
 
           <ImageView
+              android:visibility="gone"
               android:id="@+id/number"
               android:src="@drawable/menudown"
               android:layout_alignTop="@id/bldng_edit_house"
@@ -236,6 +240,7 @@
               android:layout_height="38dp"/>
 
           <ImageView
+              android:visibility="gone"
               android:id="@+id/letterdown"
               android:src="@drawable/menudown"
               android:layout_alignTop="@id/bldng_edit_houseformat"
@@ -356,8 +361,9 @@
                   android:layout_width="match_parent"
                   android:layout_height="38dp"/>
 
-              <AutoCompleteTextView
+              <EditText
 
+                  android:focusableInTouchMode="false"
                   android:paddingLeft="5dp"
                   android:id="@+id/bldng_edit_buildingspeople"
                   android:layout_below="@id/bldng_edit_totalguard"
@@ -414,7 +420,7 @@
 
               <ImageView
 
-
+                  android:visibility="gone"
                   android:id="@+id/choosePeopleMenu"
                   android:layout_alignRight="@id/bldng_edit_buildingspeople"
                   android:layout_alignBottom="@id/bldng_edit_buildingspeople"

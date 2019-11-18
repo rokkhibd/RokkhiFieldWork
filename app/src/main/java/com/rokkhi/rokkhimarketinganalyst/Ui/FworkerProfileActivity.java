@@ -2,6 +2,7 @@ package com.rokkhi.rokkhimarketinganalyst.Ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -48,6 +49,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.rokkhi.rokkhimarketinganalyst.MainActivity;
 import com.rokkhi.rokkhimarketinganalyst.Model.AllStringValues;
+import com.rokkhi.rokkhimarketinganalyst.Model.CustomListAdapter;
 import com.rokkhi.rokkhimarketinganalyst.R;
 import com.rokkhi.rokkhimarketinganalyst.Utils.Normalfunc;
 import com.vansuita.pickimage.bean.PickResult;
@@ -66,7 +68,7 @@ import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FworkerProfileActivity extends AppCompatActivity {
+public class FworkerProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     AutoCompleteTextView f_gender;
     EditText f_area;
@@ -75,9 +77,13 @@ public class FworkerProfileActivity extends AppCompatActivity {
 
     Button saveData;
 
+    String userPhoneNumber;
+
+    CustomListAdapter customListAdapter;
+
     ImageView areaMenu,genderMenu,dobCal,joinDateCal;
     EditText f_name,f_road,f_block,f_houseno,f_roadletter,f_phone,f_nid,f_dob,f_uni,f_mail,f_joindate,f_bkash,f_nogod,f_refId;
-    TextView knowMore;
+    TextView knowMore,mblNumberget,bkashNumberget,nogodNumberget;
 
     //TODO: Creates String variable
 
@@ -96,7 +102,6 @@ public class FworkerProfileActivity extends AppCompatActivity {
     FirebaseStorage firebaseStorage;
     StorageReference storageRef;
     FirebaseUser currentUser;
-
     String userId,downloadImageUri;
 
     DatePickerDialog datePickerDialog;
@@ -138,6 +143,14 @@ public class FworkerProfileActivity extends AppCompatActivity {
         f_nogod=findViewById(R.id.fworker_nogod_edit);
         f_refId=findViewById(R.id.fworker_refcode_edit);
         knowMore=findViewById(R.id.ref_knowMore_txt);
+        mblNumberget=findViewById(R.id.getnumber_txt);
+        bkashNumberget=findViewById(R.id.getbkashnumber_txt);
+        nogodNumberget=findViewById(R.id.getnogodhnumber_txt);
+
+        mblNumberget.setOnClickListener(this);
+        bkashNumberget.setOnClickListener(this);
+        nogodNumberget.setOnClickListener(this);
+
         progressBar=findViewById(R.id.progressBar);
 
         spinKitProgressBar=findViewById(R.id.spin_kit);
@@ -156,7 +169,10 @@ public class FworkerProfileActivity extends AppCompatActivity {
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,allStringValues.gender);
         f_gender.setAdapter(adapter);
 
-        checkProfileActvty();
+        //checkProfileActvty();
+       // getTheCurrentUserPhoneNumber();
+
+
 
         //TODO:Click listener of All Image views
         saveData.setOnClickListener(new View.OnClickListener() {
@@ -181,6 +197,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
                 final AlertDialog alertDialog1=alert.create();
                 alertDialog1.setCanceledOnTouchOutside(true);
                 alertDialog1.show();
+
 
 
             }
@@ -361,6 +378,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
         houseNoList = rowList.findViewById(R.id.listview);
         houseNoEdit=rowList.findViewById(R.id.search_edit);
         adapter=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,allStringValues.road_no);
+        //customListAdapter=new CustomListAdapter(this,allStringValues.road_no);
         houseNoList.setAdapter(adapter);
         ColorDrawable color = new ColorDrawable(this.getResources().getColor(R.color.lightorange));
         houseNoList.setDivider(color);
@@ -655,8 +673,8 @@ public class FworkerProfileActivity extends AppCompatActivity {
                             throw task.getException();
                         }
                         downloadImageUri=filePath.getDownloadUrl().toString();
-
                         return filePath.getDownloadUrl();
+
                     }
                 }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
@@ -679,6 +697,12 @@ public class FworkerProfileActivity extends AppCompatActivity {
         startActivity(new Intent(FworkerProfileActivity.this,MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK| Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
         finish();
+
+        //MyhomeFragment fragment = new MyhomeFragment();
+        //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        //transaction.replace(R.id.fragment_myHome, fragment);
+        //transaction.commit();
+
     }
 
     public String add88withNumb(String s){
@@ -714,4 +738,24 @@ public class FworkerProfileActivity extends AppCompatActivity {
         }
     }
 
+    public void getTheCurrentUserPhoneNumber(EditText s){
+
+        currentUser=mAuth.getCurrentUser();
+        userPhoneNumber=currentUser.getPhoneNumber();
+
+        s.setText(userPhoneNumber);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if (v.getId()==R.id.getnumber_txt){
+            getTheCurrentUserPhoneNumber(f_phone);
+        }else if (v.getId()==R.id.getbkashnumber_txt){
+            getTheCurrentUserPhoneNumber(f_bkash);
+        }else if (v.getId()==R.id.getnogodhnumber_txt){
+            getTheCurrentUserPhoneNumber(f_nogod);
+        }
+    }
 }

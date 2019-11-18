@@ -49,6 +49,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.rokkhi.rokkhimarketinganalyst.Model.AllStringValues;
+import com.rokkhi.rokkhimarketinganalyst.Model.CustomListAdapter;
 import com.rokkhi.rokkhimarketinganalyst.Model.FBuildings;
 import com.rokkhi.rokkhimarketinganalyst.R;
 import com.rokkhi.rokkhimarketinganalyst.Utils.Normalfunc;
@@ -76,6 +77,7 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
     ProgressBar progressBar;
+    CustomListAdapter customListAdapter;
 
     RelativeLayout relativeLayout;
 
@@ -97,7 +99,7 @@ public class AddBuildingActivity extends AppCompatActivity {
     CircleImageView circleImageView;
     EditText b_name, b_totalfloor, b_floorperflat, b_totalguard, b_ownername, b_ownernmbr, b_managername,
             b_managernmbr, b_lat, b_long, b_area, b_roadnumber, b_block, b_housenmbr, b_housefrmt,
-            b_visit, b_follwing, b_caretakername, b_caretakernmbr,b_code,b_guardname,b_guardnmbr,b_peoplesName,b_peopleNumber;
+            b_visit, b_follwing, b_caretakername, b_caretakernmbr,b_code,b_guardname,b_guardnmbr,b_peoplesName,b_peopleNumber,people_we_talk;
 
     Button saveBtn,tapCode,addInfoButton,checkHouseBtn,saveNumberBtn;
 
@@ -110,7 +112,7 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     DatePickerDialog datePickerDialog;
 
-    AutoCompleteTextView b_status,b_flatfrmt,b_district,people_we_talk;
+    AutoCompleteTextView b_status,b_flatfrmt,b_district;
 
     int areaCodePos;
     List<Long>areaCodeList;
@@ -185,7 +187,7 @@ public class AddBuildingActivity extends AppCompatActivity {
         b_district.setAdapter(adapter);
 
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,allStringValues.designation);
-        people_we_talk.setAdapter(adapter);
+        //people_we_talk.setAdapter(adapter);
 
 
         addInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -252,10 +254,12 @@ public class AddBuildingActivity extends AppCompatActivity {
             }
         });
 
-        designationMenu.setOnClickListener(new View.OnClickListener() {
+        people_we_talk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                people_we_talk.showDropDown();
+                //people_we_talk.showDropDown();
+                //Toast.makeText(AddBuildingActivity.this, "ok", Toast.LENGTH_SHORT).show();
+                showTypeofPeopleInbuilding();
 
             }
         });
@@ -466,6 +470,7 @@ public class AddBuildingActivity extends AppCompatActivity {
                 }
 
                 adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, areaList);
+                //customListAdapter=new CustomListAdapter(AddBuildingActivity.this,areaList);
                 adapter.notifyDataSetChanged();
                 areaListView.setAdapter(adapter);
 
@@ -563,7 +568,9 @@ public class AddBuildingActivity extends AppCompatActivity {
         roadNumberList = rowList.findViewById(R.id.listview);
         roadNumberEdit=rowList.findViewById(R.id.search_edit);
         adapter=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,allStringValues.road_no);
+        //customListAdapter=new CustomListAdapter(this,allStringValues.road_no);
         roadNumberList.setAdapter(adapter);
+
         ColorDrawable color = new ColorDrawable(this.getResources().getColor(R.color.lightorange));
         roadNumberList.setDivider(color);
         roadNumberList.setDividerHeight(2);
@@ -793,7 +800,7 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     }
 
-   public void saveBuildingDataInDB(){
+    public void saveBuildingDataInDB(){
 
        String area=b_area.getText().toString();
        String road=b_roadnumber.getText().toString();
@@ -887,7 +894,7 @@ public class AddBuildingActivity extends AppCompatActivity {
 
    }
 
-   public String add88withNumb(String s){
+    public String add88withNumb(String s){
         String number="+88"+s;
         return number;
    }
@@ -931,7 +938,7 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     }
 
-   public void shoeAlertforhouseNotfound(){
+    public void shoeAlertforhouseNotfound(){
         AlertDialog.Builder alert= new AlertDialog.Builder(AddBuildingActivity.this);
         View view=getLayoutInflater().inflate(R.layout.house_not_found,null);
 
@@ -976,6 +983,42 @@ public class AddBuildingActivity extends AppCompatActivity {
         });
     }
 
+    public void showTypeofPeopleInbuilding(){
 
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+        View rowList = getLayoutInflater().inflate(R.layout.adress_list, null);
+        areaListView = rowList.findViewById(R.id.listview);
+        areaEdit = rowList.findViewById(R.id.search_edit);
+
+        db.collection("f_building_peopleType").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                areaList.clear();
+
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+
+                    String area_eng = documentSnapshot.getString("type");
+
+                    areaList.add(area_eng);
+
+                }
+
+                adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, areaList);
+                adapter.notifyDataSetChanged();
+                areaListView.setAdapter(adapter);
+
+            }
+        });
+
+        ColorDrawable color = new ColorDrawable(this.getResources().getColor(R.color.lightorange));
+        areaListView.setDivider(color);
+        areaListView.setDividerHeight(1);
+        alertDialog.setView(rowList);
+        final AlertDialog dialog = alertDialog.create();
+        dialog.show();
+
+
+    }
 
 }

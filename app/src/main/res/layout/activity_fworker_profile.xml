@@ -189,6 +189,20 @@
             android:layout_width="match_parent"
             android:layout_height="36dp"/>
 
+        <TextView
+            android:id="@+id/getnumber_txt"
+            android:paddingRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_alignRight="@id/fworker_phone_edit"
+            android:layout_alignBottom="@id/fworker_phone_edit"
+            android:layout_alignTop="@id/fworker_phone_edit"
+            android:textColor="@color/lightorange"
+            android:text="Get number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+
 
         <EditText
 
@@ -205,9 +219,8 @@
             android:layout_height="38dp"/>
 
         <TextView
-
             android:id="@+id/ref_knowMore_txt"
-            android:paddingRight="5dp"
+            android:paddingRight="10dp"
             android:layout_marginTop="10dp"
             android:layout_alignRight="@id/fworker_refcode_edit"
             android:layout_alignBottom="@id/fworker_refcode_edit"
@@ -248,9 +261,21 @@
             android:layout_width="match_parent"
             android:layout_height="38dp"/>
 
+        <TextView
+            android:id="@+id/getbkashnumber_txt"
+            android:paddingRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_alignRight="@id/fworker_bkash_edit"
+            android:layout_alignBottom="@id/fworker_bkash_edit"
+            android:layout_alignTop="@id/fworker_bkash_edit"
+            android:textColor="@color/lightorange"
+            android:text="Get number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
 
         <EditText
-
 
             android:inputType="number"
             android:paddingLeft="5dp"
@@ -264,6 +289,18 @@
             android:layout_width="match_parent"
             android:layout_height="38dp"/>
 
+
+        <TextView
+            android:id="@+id/getnogodhnumber_txt"
+            android:paddingRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_alignRight="@id/fworker_nogod_edit"
+            android:layout_alignBottom="@id/fworker_nogod_edit"
+            android:layout_alignTop="@id/fworker_nogod_edit"
+            android:textColor="@color/lightorange"
+            android:text="Get number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
 
 

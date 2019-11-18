@@ -153,16 +153,31 @@ public class MyhomeFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser=firebaseAuth.getCurrentUser();
 
-               //df String uid=firebaseUser.getUid();
-
                 if(firebaseUser==null){
                     gotoLogIN();
 
                 }
-                else {
-                    checkUserLogInOrNot();
-                    // shoWorkerDetails();
-                  // gotoFworkerActivty();
+                else{
+
+                    final String user_id=firebaseAuth.getCurrentUser().getUid();
+
+                    db.collection("f_workers").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                            profile_progressBar.setVisibility(View.GONE);
+
+                            if (documentSnapshot!=null && documentSnapshot.exists()){
+                                String name=documentSnapshot.getString("fw_name");
+                                String imageurl=documentSnapshot.getString("fw_imageUrl");
+                                f_name.setText(name);
+                                Glide.with(getContext()).load(imageurl).into(profileImage);
+
+                            }else {
+                                gotoFworkerActivty();
+                            }
+                        }
+                    });
+
                 }
             }
         };
@@ -175,8 +190,13 @@ public class MyhomeFragment extends Fragment {
         db.collection("f_worker").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                profile_progressBar.setVisibility(View.GONE);
 
-                if (documentSnapshot.exists()){
+                if (documentSnapshot!=null && documentSnapshot.exists()){
+                    String name=documentSnapshot.getString("fw_name");
+                    String imageurl=documentSnapshot.getString("fw_imageUrl");
+                    f_name.setText(name);
+                    Glide.with(getContext()).load(imageurl).into(profileImage);
 
                 }else {
                     gotoFworkerActivty();
