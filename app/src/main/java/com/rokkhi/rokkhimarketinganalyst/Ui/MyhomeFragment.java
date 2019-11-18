@@ -1,6 +1,7 @@
 package com.rokkhi.rokkhimarketinganalyst.Ui;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -38,6 +39,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.rokkhi.rokkhimarketinganalyst.MainActivity;
 import com.rokkhi.rokkhimarketinganalyst.Model.BuildingsListAdapter;
 import com.rokkhi.rokkhimarketinganalyst.Model.FBuildings;
 import com.rokkhi.rokkhimarketinganalyst.Model.Workers;
@@ -100,6 +102,8 @@ public class MyhomeFragment extends Fragment {
         firebaseUser=mAuth.getCurrentUser();
         fworkers=new Workers();
 
+
+
         f_name=view.findViewById(R.id.myHome_frag_fwname);
         profile_progressBar=view.findViewById(R.id.profile_progress);
         spinKitProgress=view.findViewById(R.id.spin_kit);
@@ -125,6 +129,7 @@ public class MyhomeFragment extends Fragment {
 
         spinKitProgress.setVisibility(View.VISIBLE);
         gettingAllHouseData();
+//        shoWorkerDetails();
 
         flotbtn = view.findViewById(R.id.floating_btn);
 
@@ -148,13 +153,44 @@ public class MyhomeFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser=firebaseAuth.getCurrentUser();
 
+               //df String uid=firebaseUser.getUid();
+
                 if(firebaseUser==null){
                     gotoLogIN();
-                }else {
-                    shoWorkerDetails();
+
+                }
+                else {
+                    checkUserLogInOrNot();
+                    // shoWorkerDetails();
+                  // gotoFworkerActivty();
                 }
             }
         };
+
+    }
+
+    private void checkUserLogInOrNot() {
+        final String user_id=mAuth.getCurrentUser().getUid();
+
+        db.collection("f_worker").document(user_id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+
+                if (documentSnapshot.exists()){
+
+                }else {
+                    gotoFworkerActivty();
+                }
+            }
+        });
+
+
+    }
+
+    private void gotoFworkerActivty() {
+
+        Intent intent=new Intent(getContext(),FworkerProfileActivity.class);
+        startActivity(intent);
 
     }
 
@@ -218,7 +254,6 @@ public class MyhomeFragment extends Fragment {
         if (resultCode == RESULT_OK) {
             Log.d(TAG, "handleSignInResponse: checkhere ");
             Log.d(TAG, "handleSignInResponse: jjj " + FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
-            //loaduserdata();
 
         } else {
             if (response == null) {

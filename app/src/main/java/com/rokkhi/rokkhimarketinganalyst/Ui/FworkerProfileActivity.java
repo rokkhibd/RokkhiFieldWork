@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.ybq.android.spinkit.style.Wave;
@@ -67,19 +68,23 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FworkerProfileActivity extends AppCompatActivity {
 
-    AutoCompleteTextView f_area,f_gender;
+    AutoCompleteTextView f_gender;
+    EditText f_area;
 
     AllStringValues allStringValues;
 
     Button saveData;
 
     ImageView areaMenu,genderMenu,dobCal,joinDateCal;
-    EditText f_name,f_road,f_block,f_houseno,f_roadletter,f_phone,f_nid,f_dob,f_uni,f_mail,f_joindate;
+    EditText f_name,f_road,f_block,f_houseno,f_roadletter,f_phone,f_nid,f_dob,f_uni,f_mail,f_joindate,f_bkash,f_nogod,f_refId;
+    TextView knowMore;
 
     //TODO: Creates String variable
 
 
     ArrayAdapter<String> adapter;
+
+    Normalfunc normalfunc=new Normalfunc();
 
     List<String> areaList=new ArrayList<>();
 
@@ -129,6 +134,10 @@ public class FworkerProfileActivity extends AppCompatActivity {
         f_uni=findViewById(R.id.fworker_uni_edit);
         f_mail=findViewById(R.id.fworker_mail_edit);
         f_joindate=findViewById(R.id.fworker_joining_edit);
+        f_bkash=findViewById(R.id.fworker_bkash_edit);
+        f_nogod=findViewById(R.id.fworker_nogod_edit);
+        f_refId=findViewById(R.id.fworker_refcode_edit);
+        knowMore=findViewById(R.id.ref_knowMore_txt);
         progressBar=findViewById(R.id.progressBar);
 
         spinKitProgressBar=findViewById(R.id.spin_kit);
@@ -144,7 +153,6 @@ public class FworkerProfileActivity extends AppCompatActivity {
         joinDateCal=findViewById(R.id.calendar_joining);
         circleImageView=findViewById(R.id.fworker_photo);
 
-
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,allStringValues.gender);
         f_gender.setAdapter(adapter);
 
@@ -155,13 +163,30 @@ public class FworkerProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 spinKitProgressBar.setVisibility(View.VISIBLE);
+                normalfunc.checklengthEmptyOrNot(f_nid,f_phone,f_mail,f_refId);
                 saveAllDataToFirestore();
 
 
             }
         });
 
-        areaMenu.setOnClickListener(new View.OnClickListener() {
+        knowMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder alert= new AlertDialog.Builder(FworkerProfileActivity.this);
+                View view=getLayoutInflater().inflate(R.layout.referral_show_dialog,null);
+                alert.setView(view);
+
+                final AlertDialog alertDialog1=alert.create();
+                alertDialog1.setCanceledOnTouchOutside(true);
+                alertDialog1.show();
+
+
+            }
+        });
+
+        f_area.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //f_area.showDropDown();
@@ -200,6 +225,13 @@ public class FworkerProfileActivity extends AppCompatActivity {
             }
         });
 
+        f_roadletter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAvailableRoadLetter();
+            }
+        });
+
         f_road.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,38 +263,16 @@ public class FworkerProfileActivity extends AppCompatActivity {
         dobCal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
-                datePickerDialog = new DatePickerDialog(FworkerProfileActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                                f_dob.setText(day + "/" + (month + 1) + "/" + year);
-                            }
-                        }, year, month, dayOfMonth);
-                datePickerDialog.show();
+                AllStringValues.showCalendar(FworkerProfileActivity.this,f_dob);
             }
         });
 
         joinDateCal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
-                datePickerDialog = new DatePickerDialog(FworkerProfileActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                                f_joindate.setText(day + "/" + (month + 1) + "/" + year);
-                            }
-                        }, year, month, dayOfMonth);
-                datePickerDialog.show();
+               AllStringValues.showCalendar(FworkerProfileActivity.this,f_joindate);
 
             }
         });
@@ -326,6 +336,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
 
+
             }
         });
 
@@ -337,6 +348,8 @@ public class FworkerProfileActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+
+
 
     }
 
@@ -438,6 +451,54 @@ public class FworkerProfileActivity extends AppCompatActivity {
 
     }
 
+    private void showAvailableRoadLetter(){
+        final AlertDialog.Builder alertDialog=new AlertDialog.Builder(this);
+
+        View rowList = getLayoutInflater().inflate(R.layout.adress_list, null);
+        roadNumberList = rowList.findViewById(R.id.listview);
+        roadNumberEdit=rowList.findViewById(R.id.search_edit);
+        adapter=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,allStringValues.road_no);
+        roadNumberList.setAdapter(adapter);
+        ColorDrawable color = new ColorDrawable(this.getResources().getColor(R.color.lightorange));
+        roadNumberList.setDivider(color);
+        roadNumberList.setDividerHeight(2);
+        roadNumberList.setSelector(R.color.lightorange);
+
+        adapter.notifyDataSetChanged();
+        alertDialog.setView(rowList);
+        final AlertDialog dialog = alertDialog.create();
+        dialog.show();
+
+        roadNumberEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                FworkerProfileActivity.this.adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        roadNumberList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String roadno=String.valueOf(parent.getItemAtPosition(position));
+                f_roadletter.setText(roadno);
+
+                dialog.dismiss();
+            }
+        });
+
+    }
+
     private void showAvailableRoads() {
 
         final AlertDialog.Builder alertDialog=new AlertDialog.Builder(this);
@@ -498,6 +559,8 @@ public class FworkerProfileActivity extends AppCompatActivity {
         String fw_housenmbr=f_houseno.getText().toString();
         String fw_houseletter=f_roadletter.getText().toString();
         String fphone=f_phone.getText().toString();
+        String fw_bkash=f_bkash.getText().toString();
+        String fw_nogod=f_nogod.getText().toString();
 
         String phone=add88withNumb(fphone);
 
@@ -509,7 +572,7 @@ public class FworkerProfileActivity extends AppCompatActivity {
         String fw_gender=f_gender.getText().toString();
         String fw_address=fw_area+" "+fw_road+fw_block+" "+fw_housenmbr+fw_houseletter;
 
-        Normalfunc normalfunc=new Normalfunc();
+
         List<String> fw_phone=normalfunc.splitstring(phone);
 
         Map<String,Object> fw_map=new HashMap<>();
@@ -524,7 +587,9 @@ public class FworkerProfileActivity extends AppCompatActivity {
         fw_map.put("fw_imageUrl",downloadImageUri);
         fw_map.put("fw_gender",fw_gender);
         fw_map.put("fw_uid",userId);
-
+        fw_map.put("fw_bkash",fw_bkash);
+        fw_map.put("fw_nogod",fw_nogod);
+        //fw_map.put("fw_rd")
 
         SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor=sharedPreferences.edit();
@@ -606,9 +671,13 @@ public class FworkerProfileActivity extends AppCompatActivity {
 
     }
 
+
+
     private void stayAtMainActvity() {
-        Intent intent= new Intent(FworkerProfileActivity.this,MainActivity.class);
-        startActivity(intent);
+//        Intent intent= new Intent(FworkerProfileActivity.this,MainActivity.class);
+//    ;
+        startActivity(new Intent(FworkerProfileActivity.this,MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK| Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
         finish();
     }
 
@@ -625,23 +694,22 @@ public class FworkerProfileActivity extends AppCompatActivity {
             stayAtMainActvity();
         }else {
 
-            String fw_name=sharedPreferences.getString("fw_name","no data");
-            String fw_phone=sharedPreferences.getString("fw_phone","no data");
-            String fw_area=sharedPreferences.getString("fw_area","no data");
-            String fw_road=sharedPreferences.getString("fw_road","no data");
-            String fw_block=sharedPreferences.getString("fw_block","no data");
-            String fw_housenumber=sharedPreferences.getString("fw_housenumber","no data");
-            String fw_nid=sharedPreferences.getString("fw_nid","no data");
-            String fw_dob=sharedPreferences.getString("fw_dob","no data");
-            String fw_uni=sharedPreferences.getString("fw_uni","no data");
-            String fw_joindate=sharedPreferences.getString("fw_joindate","no data");
-            String fw_gender=sharedPreferences.getString("fw_gender","no data");
-            String fw_mail=sharedPreferences.getString("fw_mail","no data");
+            String fw_name=sharedPreferences.getString("fw_name","");
+            String fw_phone=sharedPreferences.getString("fw_phone","");
+            String fw_area=sharedPreferences.getString("fw_area","");
+            String fw_road=sharedPreferences.getString("fw_road","");
+            String fw_block=sharedPreferences.getString("fw_block","");
+            String fw_housenumber=sharedPreferences.getString("fw_housenumber","");
+            String fw_nid=sharedPreferences.getString("fw_nid","");
+            String fw_dob=sharedPreferences.getString("fw_dob","");
+            String fw_uni=sharedPreferences.getString("fw_uni","");
+            String fw_joindate=sharedPreferences.getString("fw_joindate","");
+            String fw_gender=sharedPreferences.getString("fw_gender","");
+            String fw_mail=sharedPreferences.getString("fw_mail","");
 
             f_name.setText(fw_name);
             f_phone.setText(fw_phone);
             f_area.setText(fw_area);
-
 
         }
     }

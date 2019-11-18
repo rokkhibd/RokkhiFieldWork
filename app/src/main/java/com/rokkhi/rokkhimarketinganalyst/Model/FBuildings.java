@@ -9,6 +9,7 @@ public class FBuildings {
     @Exclude
     private String id;
 
+
     private String b_address;
     private String b_caretakernam;
     private String b_caretakernmbr;

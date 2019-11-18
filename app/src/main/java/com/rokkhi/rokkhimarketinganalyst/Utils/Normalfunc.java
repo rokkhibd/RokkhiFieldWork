@@ -1,6 +1,7 @@
 package com.rokkhi.rokkhimarketinganalyst.Utils;
 
 import android.content.Context;
+import android.widget.EditText;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -58,5 +59,40 @@ public class Normalfunc {
 
         return xx;
     }
+
+    public void checklengthEmptyOrNot(EditText s1, EditText s2, EditText s3, EditText s4){
+
+        if (s1.length()==0){
+            s1.setError("Empty N.I.D field");
+        }else if (s2.length()==0){
+            s2.setError("Empty Phone Number");
+        }
+        else if (s3.length()==0){
+            s3.setError("Empty Mail Id");
+        }
+        else if (s4.length()==0){
+            s4.setError("Empty Referral Id");
+        }
+
+
+    }
+
+    public void checkStringlengthEmpty(EditText s1, EditText s2, EditText s3, EditText s4,EditText s5,EditText s6){
+
+        if (s1.length()==0){
+            s1.setError("");
+        }else if (s2.length()==0){
+            s2.setError("");
+        }else if (s3.length()==0){
+            s3.setError("");
+        }else if (s4.length()==0){
+            s4.setError("");
+        }else if (s5.length()==0){
+            s5.setError("");
+        }else if (s6.length()==0){
+            s6.setError("");
+        }
+    }
+
 
 }

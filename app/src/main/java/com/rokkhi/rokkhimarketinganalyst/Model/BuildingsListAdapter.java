@@ -1,9 +1,7 @@
 package com.rokkhi.rokkhimarketinganalyst.Model;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.rokkhi.rokkhimarketinganalyst.R;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -25,7 +34,7 @@ public class BuildingsListAdapter extends RecyclerView.Adapter<BuildingsListAdap
 
 
     public BuildingsListAdapter(List<FBuildings> fBuildingsList) {
-        //this.context = context;
+
         this.fBuildingsList = fBuildingsList;
     }
 
@@ -48,6 +57,7 @@ public class BuildingsListAdapter extends RecyclerView.Adapter<BuildingsListAdap
             @Override
             public void onClick(View v) {
 
+                FBuildings fBuildings=fBuildingsList.get(bv.getAdapterPosition());
 
                 TextView textView=(TextView) dialog.findViewById(R.id.house_name);
                 textView.setText("House Name: "+fBuildingsList.get(bv.getAdapterPosition()).getB_housename());
@@ -55,10 +65,35 @@ public class BuildingsListAdapter extends RecyclerView.Adapter<BuildingsListAdap
                 TextView address=(TextView) dialog.findViewById(R.id.house_address);
                 address.setText(fBuildingsList.get(bv.getAdapterPosition()).getB_address());
 
+                TextView caretakerName=(TextView) dialog.findViewById(R.id.caretaker_name);
+                caretakerName.setText(fBuildings.getB_caretakernam());
+
+                TextView caretakerNumber=dialog.findViewById(R.id.caretaker_number);
+                caretakerNumber.setText(fBuildings.getB_caretakernmbr());
+
+                TextView ownerName=dialog.findViewById(R.id.owner_name);
+                ownerName.setText(fBuildings.getB_ownername());
+
+                TextView ownerNumber=dialog.findViewById(R.id.owner_number);
+                ownerNumber.setText(fBuildings.getB_ownernmbr());
+
+                TextView guardName=dialog.findViewById(R.id.guard_name);
+                guardName.setText(fBuildings.getB_guardname());
+
+                TextView guardNumber=dialog.findViewById(R.id.guard_number);
+                guardNumber.setText(fBuildings.getB_guardnmbr());
+
+                TextView visitdate=dialog.findViewById(R.id.visited_date);
+                visitdate.setText(fBuildings.getB_visiteddate());
+
+                TextView followupDate=dialog.findViewById(R.id.followup_date);
+                followupDate.setText(fBuildings.getB_followupdate());
+
                 Toast.makeText(parent.getContext(), String.valueOf(bv.getAdapterPosition()), Toast.LENGTH_SHORT).show();
                 dialog.show();
             }
         });
+
         return bv;
     }
 
@@ -84,8 +119,9 @@ public class BuildingsListAdapter extends RecyclerView.Adapter<BuildingsListAdap
 
         TextView build_name,build_address,build_status,build_lastVisit;
         RelativeLayout relativeLayout;
-        public BuildingViewholder(@NonNull View itemView) {
+        public BuildingViewholder(@NonNull final View itemView) {
             super(itemView);
+
             relativeLayout=(RelativeLayout) itemView.findViewById(R.id.item_list_id);
             build_name=itemView.findViewById(R.id.myhome_frag_bldngName);
             build_address=itemView.findViewById(R.id.myhome_frag_bldngAddress);
@@ -93,7 +129,7 @@ public class BuildingsListAdapter extends RecyclerView.Adapter<BuildingsListAdap
             build_lastVisit=itemView.findViewById(R.id.myhome_frag_bldngvisitdate);
 
 
-            //itemView.setOnClickListener(this);
+
         }
 
 

@@ -34,7 +34,7 @@
                         android:textColor="@color/orange"
                         android:textSize="25sp"
                         android:layout_centerVertical="true"
-                        android:text="Buildings Information"
+                        android:text="Building Information"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
@@ -201,6 +201,7 @@
             android:layout_height="38dp"/>
 
         <AutoCompleteTextView
+            android:focusableInTouchMode="false"
             android:id="@+id/bldng_edit_disctrict"
             android:layout_toRightOf="@+id/bldng_edit_houseformat"
             android:paddingLeft="5dp"
@@ -249,7 +250,7 @@
 
         <RelativeLayout
             android:id="@+id/addbldng_relative_layout"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_below="@id/bldng_button_housecheck"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
