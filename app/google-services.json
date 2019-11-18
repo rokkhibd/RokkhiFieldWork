@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "419408335722",
+    "firebase_url": "https://demorokkhi.firebaseio.com",
+    "project_id": "demorokkhi",
+    "storage_bucket": "demorokkhi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:419408335722:android:0bd94588418a379a234b13",
+        "android_client_info": {
+          "package_name": "com.rokkhi.rokkhimarketinganalyst"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "419408335722-tmlh4pvava9k6b2cc5jbt0ig9e6mambc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rokkhi.rokkhimarketinganalyst",
+            "certificate_hash": "f1aabb6a92190f89abef8c6f204c85738ca58bd3"
+          }
+        },
+        {
+          "client_id": "419408335722-4o1p2a15dko94cns7oqlirvdfhp3cae6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaiT1p13iJqtyVPRxrFGxlRN3hFYGNoRA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "419408335722-4o1p2a15dko94cns7oqlirvdfhp3cae6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
